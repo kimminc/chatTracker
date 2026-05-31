@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chatTracker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link id="hljs-theme" rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/github-dark.min.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- ── Topbar ──────────────────────────────────────────────────────────── -->
+  <header class="topbar">
+    <div class="topbar-left">
+      <div class="logo" id="logo-home" style="cursor:pointer">
+        <span class="logo-icon">✦</span>
+        <span class="logo-text">chat<span class="logo-accent">Tracker</span></span>
+      </div>
+      <div class="topbar-divider"></div>
+      <span class="topbar-sub" id="topbar-sub">대화 기록 뷰어</span>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-stat" id="topbar-stat"></div>
+      <button class="btn-icon" id="theme-toggle" title="라이트/다크 전환">
+        <span class="icon-sun">☀</span>
+        <span class="icon-moon">◐</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ── App body ───────────────────────────────────────────────────────── -->
+  <div class="app-body">
+
+    <!-- ── Left nav ────────────────────────────────────────────────────── -->
+    <nav class="left-nav">
+      <button class="left-nav-item active" type="button" data-page="home">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>대화 기록</span>
+      </button>
+      <button class="left-nav-item" type="button" data-page="api">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/>
+          <polyline points="8 6 2 12 8 18"/>
+        </svg>
+        <span>REST API</span>
+      </button>
+      <button class="left-nav-item" type="button" data-page="slides">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="12" y1="8" x2="12" y2="12"/>
+          <circle cx="12" cy="16" r="0.5" fill="currentColor"/>
+        </svg>
+        <span>소개페이지</span>
+      </button>
+      <button class="left-nav-item" type="button" data-page="settings">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+        <span>설정</span>
+      </button>
+    </nav>
+
+    <!-- ── Content area ────────────────────────────────────────────────── -->
+    <iframe id="embed-api"    class="embed-frame" src=""></iframe>
+    <iframe id="embed-slides" class="embed-frame" src=""></iframe>
+    <div id="settings-view" class="settings-view" style="display:none"></div>
+
+    <div class="main" id="main-view">
+
+      <!-- ── Sidebar ──────────────────────────────────────────────────── -->
+      <aside class="sidebar">
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input type="search" id="search" class="search-input"
+            placeholder="검색 (Ctrl+K)" autocomplete="off" spellcheck="false" />
+          <div class="search-tools">
+            <button class="search-tool-btn" id="date-filter-toggle" title="날짜 필터">📅</button>
+            <button class="search-tool-btn" id="content-search-toggle" title="내용 검색">🔤</button>
+          </div>
+        </div>
+
+        <!-- Date filter (collapsed) -->
+        <div id="date-filter-bar" class="date-filter-bar" style="display:none">
+          <div class="date-row">
+            <label>시작</label>
+            <input type="date" id="date-from" class="date-input" />
+          </div>
+          <div class="date-row">
+            <label>종료</label>
+            <input type="date" id="date-to" class="date-input" />
+          </div>
+          <button class="date-clear-btn" id="date-clear">초기화</button>
+        </div>
+
+        <!-- Content search mode banner -->
+        <div id="content-mode-bar" class="content-mode-bar" style="display:none">
+          <span class="content-mode-icon">🔤</span>
+          <span>내용 검색 활성</span>
+          <span class="content-mode-hint">— 검색에 시간이 걸릴 수 있습니다</span>
+        </div>
+
+        <div id="session-list" class="session-list">
+          <div class="list-placeholder">
+            <div class="ph-line" style="width:80%"></div>
+            <div class="ph-line" style="width:60%"></div>
+            <div class="ph-line" style="width:75%"></div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination" id="pagination" style="display:none">
+          <button class="pg-btn" id="pg-prev">←</button>
+          <span class="pg-info" id="pg-info"></span>
+          <button class="pg-btn" id="pg-next">→</button>
+          <select class="pg-size" id="pg-size">
+            <option value="10">10개</option>
+            <option value="20" selected>20개</option>
+            <option value="50">50개</option>
+            <option value="100">100개</option>
+          </select>
+        </div>
+
+        <div class="stats-bar" id="stats-bar"></div>
+      </aside>
+
+      <!-- ── Chat panel ────────────────────────────────────────────────── -->
+      <main class="chat-panel">
+
+        <!-- Empty state -->
+        <div id="chat-empty" class="chat-empty">
+          <div class="empty-graphic">
+            <div class="empty-ring ring-1"></div>
+            <div class="empty-ring ring-2"></div>
+            <div class="empty-core">✦</div>
+          </div>
+          <p class="empty-title">대화를 선택하세요</p>
+          <p class="empty-sub">왼쪽 목록에서 세션을 클릭하면<br>대화 내용을 확인할 수 있습니다</p>
+        </div>
+
+        <!-- Chat header -->
+        <div id="chat-header" class="chat-header" style="display:none">
+          <div class="chat-header-top">
+            <div class="chat-title-wrap">
+              <div class="chat-title" id="chat-title"></div>
+              <div class="chat-pills" id="chat-pills"></div>
+            </div>
+            <div class="chat-actions">
+              <button class="btn-icon" id="chat-search-toggle" title="메시지 검색 (Ctrl+F)">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+                  <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+                  <path d="m11 11 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+              </button>
+              <button class="btn" id="export-btn">↓ 내보내기</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- In-chat search bar (hidden by default) -->
+        <div id="chat-search-bar" class="chat-search-bar" style="display:none">
+          <span class="csb-icon">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+              <circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.5"/>
+              <path d="m11 11 3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </span>
+          <input id="csb-input" class="csb-input" placeholder="메시지 내 검색..." spellcheck="false" />
+          <span class="csb-count" id="csb-count"></span>
+          <button class="csb-nav" id="csb-prev" title="이전 (Shift+Enter)">↑</button>
+          <button class="csb-nav" id="csb-next" title="다음 (Enter)">↓</button>
+          <button class="csb-close" id="csb-close">✕</button>
+        </div>
+
+        <!-- Messages -->
+        <div id="chat-messages" class="chat-messages" style="display:none"></div>
+
+        <!-- Footer -->
+        <footer class="chat-footer">chatTracker V1.0 &nbsp;·&nbsp; created by mckim</footer>
+
+      </main>
+    </div>
+
+  </div><!-- /.app-body -->
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked@15/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/highlight.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
