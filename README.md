@@ -13,6 +13,12 @@
 - **API 문서** — `/swagger` (Swagger UI)
 
 ---
+<img width="1672" height="941" alt="chattracker_소개" src="https://github.com/user-attachments/assets/8c270714-dad4-413b-a728-c46993776633" />
+
+<img width="1672" height="941" alt="chattracker_소개2" src="https://github.com/user-attachments/assets/f1687ab0-18a1-4bcb-8167-7fbfe242b84c" />
+
+
+---
 
 ## 빠른 시작
 
